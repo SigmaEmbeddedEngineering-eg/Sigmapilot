@@ -1,0 +1,27 @@
+<launch>
+    <!-- 
+        Launch file follows: 
+        http://gazebosim.org/tutorials?tut=ros_control#Createaroslaunchfile
+    -->
+
+    <!-- Load controller configurations from YAML file to parameter server -->
+    <rosparam command="load"
+        file="$(find gazebo_simulator)/config/robot_control.yaml"/>
+
+    <!-- load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="skid_steer_bot" args="joint_state_controller
+                                            mobile_base_controller"/>
+
+
+    <!-- convert joint states to TF transforms for rviz, etc -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        ns="skid_steer_bot" respawn="false" output="screen">
+        <!--<remap from="/joint_states" to="/skid_steer_bot/joint_states" />-->
+        <!-- param name="publish_frequency" type="double" value="30.0" /-->
+    </node>
+
+    <node name="rqt_robot_steering" pkg="rqt_robot_steering" type="rqt_robot_steering">
+        <param name="default_topic" value="/cmd_vel"/>
+    </node>
+</launch>

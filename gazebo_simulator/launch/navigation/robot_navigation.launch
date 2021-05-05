@@ -1,0 +1,42 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find gazebo_simulator)/maps/mymap_cave.yaml"/><!-- mymap_cave map -->
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
+  <arg name="local_planner" default="dwa" doc="Local planner can be either dwa, base, teb or pose"/>
+  <arg name="world_name" default="$(find gazebo_simulator)/worlds/50m_long_mine_world.world"/>
+  <arg name="sensor" default="benwake"/>
+  <arg name="scan_topic" default="clusteredPointCLoud_laser_scaner" unless="$(eval arg('sensor') =='benwake')"/>
+  <arg name="scan_topic" default="fused_laser_scan" unless="$(eval arg('sensor') =='velodyne')" />
+
+  <include file="$(find gazebo_simulator)/launch/sigmapilot_gazebo.launch">
+    <!--arg name="model" value="$(arg model)" /-->
+    <arg name="world_name" value="$(arg world_name)" />
+    <arg name="sensor" value="$(arg sensor)" />
+    <arg name="open_rviz" value="false" />
+    <arg name="slam" value="false" />
+  </include>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- AMCL -->
+  <include file="$(find gazebo_simulator)/launch/navigation/amcl.launch">
+    <arg name="scan_topic" value="$(arg scan_topic)" />
+  </include>
+
+  <!-- move_base -->
+  <!-- -->
+  <include file="$(find gazebo_simulator)/launch/navigation/move_base.launch">
+    <arg name="local_planner" value="$(arg local_planner)" />
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    <arg name="sensor" value="$(arg sensor)"/>
+  </include>
+  <!-- -->
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find gazebo_simulator)/rviz/sigmapilot_navigation.rviz"/>
+  </group>
+</launch>

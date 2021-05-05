@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <arg name="slam" default="true"/>
+    <arg name="rosbag_path" default="/home/khalid/catkin_ws/src/sigmapilot_rpi_bags/benwake_farm.bag"/>
+    <arg name="sensor" default="benwake"/>
+    <!-- velodyne, benwake -->
+
+    <node pkg="rosbag" type="play" name="player" output="screen" args="$(arg rosbag_path)"/>
+
+    <!-- launch clustering node-->
+    <group if="$(eval arg('sensor') =='benwake')">
+        <include file="$(find sgm_lidar_clustering)/launch/multi_node_benwake.launch">
+            <arg name="open_rviz" value="false"/>
+        </include>
+        <!--
+        <node name="laser_scans_fusion" pkg="laser_scans_fusion" type="laser_scans_fusion" output="screen">
+        </node>
+        -->
+
+    </group>
+
+    <group if="$(eval arg('sensor') =='velodyne')">
+        <include file="$(find sgm_lidar_clustering)/launch/Cluster_node.launch">
+            <arg name="open_rviz" value="false"/>
+        </include>
+    </group>
+
+    <group if="$(arg slam)">
+        <arg name="scan_topic" default="clusteredPointCLoud_laser_scaner" unless="$(eval arg('sensor') =='benwake')"/>
+        <arg name="scan_topic" default="fused_laser_scan" unless="$(eval arg('sensor') =='velodyne')" />
+        <include file="$(find gazebo_simulator)/launch/slam/robot_gmapping.launch">
+            <arg name="scan_topic" value="$(arg scan_topic)"/>
+        </include>
+    </group>
+
+</launch>

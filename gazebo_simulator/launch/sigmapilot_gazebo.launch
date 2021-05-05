@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="world" default="empty"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="world_name" default="$(find gazebo_simulator)/worlds/turtlebot3_world.world"/>
+  <!-- 50m_long_mine_world.world, turtlebot3_world.world, jackal_race.world, benchmarking.world  -->
+  <!-- $(find gazebo_ros)/worlds/empty_world.world-->
+  <arg name="slam" default="false"/>
+  <arg name="sensor" default="benwake"/>
+  <!-- velodyne, benwake -->
+  <arg name="open_rviz" default="true"/>
+  <arg name="assembler_LiDAR_topicname" default="[/LiDAR1/pcl]" unless="$(eval arg('sensor') =='benwake')"/>
+  <arg name="assembler_LiDAR_topicname" default="[/LiDAR1/pcl, /LiDAR2/pcl]" unless="$(eval arg('sensor') =='velodyne')" />
+  <arg name="assemble_pc" default="false"/>
+  <arg name="fbm_icp_mapping" default="true"/>
+
+
+  <include file="$(find gazebo_simulator)/launch/description/robot_description.launch">
+    <arg name="sensor" value="$(arg sensor)"/>
+  </include>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+  <!--spawn a robot in gazebo world-->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-x -2 -y 0.5 -Y 0 -urdf -param robot_description -model skid_steer_bot"/>
+
+  <!-- launch clustering node-->
+  <group if="$(eval arg('sensor') =='benwake')">
+    <include file="$(find sgm_lidar_clustering)/launch/multi_node_benwake.launch"/>
+
+    <include file="$(find laser_scans_fusion)/launch/multi_scan_fusion.launch"/>
+
+  </group>
+
+  <group if="$(eval arg('sensor') =='velodyne')">
+    <include file="$(find sgm_lidar_clustering)/launch/Cluster_node.launch"/>
+
+  </group>
+
+  <group if="$(arg slam)">
+    <arg name="scan_topic" default="clusteredPointCLoud_laser_scaner" unless="$(eval arg('sensor') =='benwake')"/>
+    <arg name="scan_topic" default="fused_laser_scan" unless="$(eval arg('sensor') =='velodyne')" />
+    <include file="$(find gazebo_simulator)/launch/slam/robot_gmapping.launch">
+      <arg name="scan_topic" value="$(arg scan_topic)"/>
+    </include>
+  </group>
+
+  <include file="$(find gazebo_simulator)/launch/control/robot_control.launch"/>
+
+  <group if="$(arg assemble_pc)">
+    <include file="$(find point_cloud_assembler)/launch/assembler_node.launch">
+      <arg name="LiDAR_topicname" value="$(arg assembler_LiDAR_topicname)"/>
+    </include>
+  </group>
+  
+  <!--
+  <group if="$(arg fbm_icp_mapping)">
+    <include file="$(find feature_based_mapping)/launch/fbm_icp.launch">
+      <arg name="LiDAR_topicname" value="$(arg assembler_LiDAR_topicname)"/>
+    </include>
+  </group>
+  -->
+
+  <!--launch rviz-->
+  <group if="$(arg open_rviz)">
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find gazebo_simulator)/rviz/sigmapilot_basic_config.rviz"/>
+  </group>
+
+</launch>

@@ -1,0 +1,14 @@
+<launch>
+  <arg name="open_rviz" default="true"/>
+  <node name="laser_scans_fusion" pkg="laser_scans_fusion" type="laser_scans_fusion" output="screen">
+    <param name="input_topic1" type="string" value="/clusteredPointCLoud1_laser_scaner" />
+    <param name="input_topic2" type="string" value="/clusteredPointCLoud2_laser_scaner" />
+    <param name="fused_topic" type="string" value="/fused_laser_scan" />
+    <param name="fusion_frame" type="string" value="fused_coloredLidar" />
+    <param name="number_fused_points" type="double" value="600" />
+    <param name="range_min" type="double" value="0.3" />
+    <param name="dis_threshold" type="double" value="0.1" />
+    <param name="tf_listener_rate" type="double" value="0.1" />
+  </node>
+
+</launch>
