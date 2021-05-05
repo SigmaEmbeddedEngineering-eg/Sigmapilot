@@ -1,0 +1,17 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="set_base_frame" default="robot_footprint"/>
+  <arg name="set_odom_frame" default="odom"/>
+  <arg name="set_map_frame"  default="map"/>
+  <arg name="scan_topic"  default="/fused_laser_scan"/><!-- fused_laser_scan clusteredPointCLoud1_laser_scaner -->
+
+  <!-- Gmapping -->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="base_frame" value="$(arg set_base_frame)"/>
+    <param name="odom_frame" value="$(arg set_odom_frame)"/>
+    <param name="map_frame"  value="$(arg set_map_frame)"/>
+    <rosparam command="load" file="$(find autobotware_simulator)/config/gmapping_params.yaml" />
+    <!-- remappings -->
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+</launch>

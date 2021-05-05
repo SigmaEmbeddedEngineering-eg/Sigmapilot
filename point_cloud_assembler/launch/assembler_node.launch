@@ -1,0 +1,19 @@
+<launch>
+  
+  <arg name="open_rviz" default="true"/>
+  <arg name="LiDAR_topicname" default="[/LiDAR1/pcl, /LiDAR2/pcl]"/>
+  <rosparam param="LiDAR_topicname" subst_value="True">$(arg LiDAR_topicname)</rosparam>
+
+
+  <node name="point_cloud_assembler" pkg="point_cloud_assembler" type="point_cloud_assembler" output="screen">
+    <param name="pub_topicname" type="string" value="/assemblerMap" />
+    <param name="voxel_size" type="double" value="0.2" />
+    <param name="tf_duration" type="double" value="0.1" />
+    <param name="odom_frame" type="string" value="odom" />
+  </node>
+
+  <group if="$(arg open_rviz)">
+    <node type="rviz" name="rviz_assembler" pkg="rviz" args="-d $(find point_cloud_assembler)/rviz/pointcloud_assembler.rviz" />
+  </group>
+
+</launch>

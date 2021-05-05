@@ -1,0 +1,31 @@
+<launch>
+  <arg name="open_rviz" default="true"/>
+  <node name="sgm_lidar_clustering" pkg="sgm_lidar_clustering" type="sgm_lidar_clustering" output="screen">
+    <param name="LiDAR_topicname" type="string" value="/LiDAR1/pcl" />
+    <!-- benwakeHorn:tarin, benwakeCE30:iris -->
+    <param name="pub_pc_topicname" type="string" value="clusteredPointCLoud" />
+    <param name="pub_ma_topicname" type="string" value="clusteredObjectList" />
+    <param name="ground_segmentation_threshold" type="double" value="0.2" />
+    <!-- 0.2 or more for cave environment, 0.1 for normal ground segmentation-->
+    <param name="distance_threshold" value="0.5" />
+    <!-- velodyne16:1, benwakeHorn:1, benwakeCE30:0.6 -->
+    <param name="distance_threshold_type" type="double" value="1" />
+    <!-- velodyne16:1, benwakeHorn:0, benwakeCE30:1 -->
+    <param name="obj_level_filter_flag" type="bool" value="true" />
+    <!-- benwakeHorn:true -->
+    <param name="obj_level_x_min" type="double" value="0.01" />
+    <param name="obj_level_y_min" type="double" value="0.01" />
+    <param name="obj_level_z_min" type="double" value="0.1" />
+    <param name="obj_level_x_max" type="double" value="2" />
+    <param name="obj_level_y_max" type="double" value="2" />
+    <param name="obj_level_z_max" type="double" value="2" />
+    <param name="obj_level_vol_threshold" type="double" value="0.1" />
+    <param name="min_horizontal_angle" type="double" value="-3.14159" />
+    <param name="max_horizontal_angle" type="double" value="3.14159" />
+    <param name="lidar_max_range" type="double" value="30" />
+  </node>
+  <group if="$(arg open_rviz)">
+    <node type="rviz" name="rviz_cluster" pkg="rviz" args="-d $(find sgm_lidar_clustering)/rviz/clustering.rviz" />
+  </group>
+
+</launch>
