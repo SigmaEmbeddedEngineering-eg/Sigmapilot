@@ -361,7 +361,7 @@
 
   <joint type="fixed" name="coloredLidar_joint">
     <!--<origin xyz="${laser_x_offset} 0 ${laser_z_offset}" rpy="0 0 0"/>-->
-    <origin xyz="0.2 0 1.5" rpy="0 0 0"/>
+    <origin xyz="0.2 0 0.5" rpy="0 0 0"/>
     <child link="coloredLidar"/>
     <parent link="chassis"/>
     <axis xyz="0 1 0" rpy="0 0 0"/>
