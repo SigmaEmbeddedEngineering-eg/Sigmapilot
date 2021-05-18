@@ -62,9 +62,12 @@ cv::Mat GroundSegmentation::ground_segmentation(SGM sgm)
     //taking threshold for the ground vectors
     cv::threshold(slope, ground_label, this->config_.ground_segmentation_threshold,
                   1, 0);
-    cv::Mat element = cv::Mat::ones(3, 3, CV_8U);
-    cv::erode(ground_label, ground_label, element, cv::Point(-1, -1), 2);
-    cv::dilate(ground_label, ground_label, element, cv::Point(-1, -1), 2);
+    if (this->config_.use_morphological_filter)
+    {
+        cv::Mat element = cv::Mat::ones(3, 3, CV_8U);
+        cv::erode(ground_label, ground_label, element, cv::Point(-1, -1), 2);
+        cv::dilate(ground_label, ground_label, element, cv::Point(-1, -1), 2);
+    }
 
     return ground_label;
 }

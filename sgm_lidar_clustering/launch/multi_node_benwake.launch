@@ -5,6 +5,7 @@
     <!-- benwakeHorn:tarin, benwakeCE30:iris -->
     <param name="pub_pc_topicname" type="string" value="clusteredPointCLoud1" />
     <param name="pub_ma_topicname" type="string" value="clusteredObjectList1" />
+    <param name="use_morphological_filter" type="bool" value="true" />
     <param name="ground_segmentation_threshold" type="double" value="0.2" />
     <param name="distance_threshold" value="0.5" />
     <!-- velodyne16:1, benwakeHorn:1, benwakeCE30:0.6 -->
@@ -28,6 +29,7 @@
     <!-- benwakeHorn:tarin, benwakeCE30:iris -->
     <param name="pub_pc_topicname" type="string" value="clusteredPointCLoud2" />
     <param name="pub_ma_topicname" type="string" value="clusteredObjectList2" />
+    <param name="use_morphological_filter" type="bool" value="true" />
     <param name="ground_segmentation_threshold" type="double" value="0.2" />
     <param name="distance_threshold" value="0.5" />
     <!-- velodyne16:1, benwakeHorn:1, benwakeCE30:0.6 -->

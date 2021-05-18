@@ -63,6 +63,8 @@ SGMClustering::SGMClustering()
                     this->config.max_horizontal_angle);
   this->nh.getParam(ros::this_node::getName() + "/lidar_max_range",
                     this->config.lidar_max_range);
+  this->nh.getParam(ros::this_node::getName() + "/use_morphological_filter",
+                    this->config.use_morphological_filter);
 
   std::cout << "obj_level_filter_flag: " << this->config.obj_level_filter_flag
             << std::endl;

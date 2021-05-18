@@ -93,6 +93,7 @@ public:
   double min_horizontal_angle;
   double max_horizontal_angle;
   double lidar_max_range;
+  bool use_morphological_filter;
 };
 
 class object
