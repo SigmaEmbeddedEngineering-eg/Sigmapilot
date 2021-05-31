@@ -8,7 +8,7 @@
     <param name="use_morphological_filter" type="bool" value="false" />
     <param name="ground_segmentation_threshold" type="double" value="0.1" />
     <!-- 0.2 or more for cave environment, 0.1 for normal ground segmentation-->
-    <param name="distance_threshold" value="1" />
+    <param name="distance_threshold" value="0.5" />
     <!-- velodyne16:1, benwakeHorn:1, benwakeCE30:0.6 -->
     <param name="distance_threshold_type" type="double" value="1" />
     <!-- velodyne16:1, benwakeHorn:0, benwakeCE30:1 -->

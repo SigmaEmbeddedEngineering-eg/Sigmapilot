@@ -105,6 +105,12 @@ public:
   double size_x;
   double size_y;
   double size_z;
+  double min_x;
+  double min_y;
+  double min_z;
+  double max_x;
+  double max_y;
+  double max_z;
 };
 
 class clustered_objects
@@ -112,5 +118,6 @@ class clustered_objects
 public:
   cv::Mat labels;
   std::vector<object> objects;
+  std::vector<std::vector<cv::Point>> cluster_indices;
 };
 #endif
