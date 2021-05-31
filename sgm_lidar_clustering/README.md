@@ -96,3 +96,88 @@ setup:
 * rviz just for visualizing what is happening on rpi, rviz runs on pc.
 
 ![BenwakeFreq](docs/rpi_benwake_demo.gif)
+
+# Benchmarking:
+Benchmarking between SGM clustering and lidar_euclidean_cluster_detect in autoware.
+
+## Simulation test rig setup:
+test rig is an array of cars setup in a 5x5 grid each grid with a distance of 10 meters between each cone, and the robot is in the middle of it
+as shown in the below figure.
+
+![simulationsetup](docs/simulation_setup.jpeg)
+
+
+## Sensor model:
+we used two sensors first is 16 layer velodyne sensor, second is 64 layer velodyne sensor, to measure the change of point cloud density on the detection algorithms.
+
+## Autobotware setup:
+clone the repo and “catkin build”
+will set two sets of configurations:
+
+* “use_morphological_filter” = false.
+* “ground_segmentation_threshold” = 0.1
+
+
+## Autoware setup:
+Follow the setup guide and build the lidar_euclidean_cluster_detect package.
+will set two sets of configurations:
+
+* “remove_ground” = true.
+* “keep_lanes” = false.
+* “clip_min_height” = -5.
+* “clip_max_height” = 5.
+* “output_frame” = 3.
+* “downsample_cloud” = true.
+
+     
+
+## KPIs:
+the KPI that we think fit the most is range of detection, as both are detection algorithms, so simply how far can each algorithm can detect, and how the frequency will be.
+
+
+
+## Experiment1:
+
+* velodyne16-SGM algorithm with ground segmentation threshold of 0.1
+
+### result:
+
+SGM effective detection range around 48m, detection frequency beween 143 and 160 hz
+
+![sgm_16](docs/sgm_16_v2_performance.png)
+![sgm_16range](docs/sgm_16_v2_range.png)
+
+* velodyne16-euclidean algorithm with downsample = true
+
+### result:
+effective detection range 25.5m, detection frequency between 74 and 90 hz
+
+![euclidean_16](docs/euclidean_clustering_16_performance.png)
+![euclidean_16range](docs/euclidean_clustering_16_range.jpeg)
+
+
+## Experiment2:
+
+* velodyne64-SGM algorithm with ground segmentation threshold of 0.1
+
+### result:
+effective detection range around 99.3m(max range), detection frequency beween 35 and 38 hz
+
+![sgm_64](docs/sgm_64_v2_performance.png)
+![sgm_64range](docs/sgm_v2_64_range.png)
+
+
+* velodyne64-euclidean algorithm with downsample = true
+### result:
+effective detection range around 63.2m, detection frequency beween 12 and 15 hz
+
+![euclidean_64](docs/euclidean_clustering_64_performance.png)
+![euclidean_64range](docs/euclidean_clustering_64_range.jpeg)
+
+
+# Conclusion:
+
+* SGM V2 clustering ~2x longer range than euclidean clustering in velodyne 16 and ~1.57x longer detection range in velodyne 64.
+* SGM V2 better in performance than euclidean clustering in velodyne16 by around 66%~84%, and in velodyne64 by around 150%~190%.
+* SGM is losless, doesnot lose pointcloud textures or downsample it, euclidean clustering requires downsampling to actually work, which may result to a deformation or object splitting into multiple objects.
+* SGM provides freespace euclidean clustering doesn’t, euclidean clustering provides pose estimation, SGM doesn’t.
