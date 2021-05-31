@@ -26,7 +26,8 @@ SGMSegmentation::SGMSegmentation(configuration config)
     this->config_ = config;
 }
 SGMSegmentation::~SGMSegmentation() {}
-cv::Mat SGMSegmentation::spherical_grid_map_depth_diff(SGM sgm, cv::Mat ground_label)
+
+clustered_objects SGMSegmentation::semantic_segmentation(SGM sgm, cv::Mat ground_label)
 {
     cv::Mat depth = sgm.d.mul(ground_label);
 
@@ -36,165 +37,241 @@ cv::Mat SGMSegmentation::spherical_grid_map_depth_diff(SGM sgm, cv::Mat ground_l
                 depth(cv::Range(0, sgm.height - 1), cv::Range::all()),
                 diffUp(cv::Range(1, sgm.height), cv::Range::all()));
 
-    cv::Mat diffDown = cv::Mat::zeros(sgm.height, sgm.width, CV_32F);
-    cv::absdiff(depth(cv::Range(1, sgm.height), cv::Range::all()),
-                depth(cv::Range(0, sgm.height - 1), cv::Range::all()),
-                diffDown(cv::Range(0, sgm.height - 1), cv::Range::all()));
-
     cv::Mat diffLeft = cv::Mat::zeros(sgm.height, sgm.width, CV_32F);
     cv::absdiff(depth(cv::Range::all(), cv::Range(1, sgm.width)),
                 depth(cv::Range::all(), cv::Range(0, sgm.width - 1)),
                 diffLeft(cv::Range::all(), cv::Range(1, sgm.width)));
 
-    cv::Mat diffRight = cv::Mat::zeros(sgm.height, sgm.width, CV_32F);
-    cv::absdiff(depth(cv::Range::all(), cv::Range(1, sgm.width)),
-                depth(cv::Range::all(), cv::Range(0, sgm.width - 1)),
-                diffRight(cv::Range::all(), cv::Range(0, sgm.width - 1)));
-
-    return (diffUp + diffDown + diffLeft + diffRight);
-}
-cv::Mat SGMSegmentation::euclidean_diff(SGM sgm, cv::Mat ground_label,
-                                        cv::Range upper_x, cv::Range lower_x,
-                                        cv::Range upper_y, cv::Range lower_y)
-{
-    cv::Mat x = sgm.x.mul(ground_label);
-    cv::Mat x_sq = cv::Mat::zeros(sgm.height, sgm.width, CV_32F);
-    cv::absdiff(x(upper_x, upper_y),
-                x(lower_x, lower_y),
-                x_sq(upper_x, upper_y));
-    cv::pow(x_sq, 2, x_sq);
-
-    cv::Mat y = sgm.y.mul(ground_label);
-    cv::Mat y_sq = cv::Mat::zeros(sgm.height, sgm.width, CV_32F);
-    cv::absdiff(y(upper_x, upper_y),
-                y(lower_x, lower_y),
-                y_sq(upper_x, upper_y));
-    cv::pow(y_sq, 2, y_sq);
-
-    cv::Mat z = sgm.z.mul(ground_label);
-    cv::Mat z_sq = cv::Mat::zeros(sgm.height, sgm.width, CV_32F);
-    cv::absdiff(z(upper_x, upper_y),
-                z(lower_x, lower_y),
-                z_sq(upper_x, upper_y));
-    cv::pow(z_sq, 2, z_sq);
-    cv::Mat equilidian_distance = x_sq + y_sq + z_sq;
-    cv::sqrt(equilidian_distance, equilidian_distance);
-    return equilidian_distance;
-}
-cv::Mat SGMSegmentation::spherical_grid_map_euclidean_diff(SGM sgm, cv::Mat ground_label)
-{
-    cv::Mat diffUp = this->euclidean_diff(sgm, ground_label,
-                                          cv::Range(1, sgm.height),
-                                          cv::Range(0, sgm.height - 1),
-                                          cv::Range::all(), cv::Range::all());
-    cv::Mat diffDown = this->euclidean_diff(sgm, ground_label,
-                                            cv::Range(0, sgm.height - 1),
-                                            cv::Range(1, sgm.height),
-                                            cv::Range::all(), cv::Range::all());
-    cv::Mat diffLeft = this->euclidean_diff(sgm, ground_label,
-                                            cv::Range::all(), cv::Range::all(),
-                                            cv::Range(1, sgm.width),
-                                            cv::Range(0, sgm.width - 1));
-    cv::Mat diffRight = this->euclidean_diff(sgm, ground_label,
-                                             cv::Range::all(), cv::Range::all(),
-                                             cv::Range(0, sgm.width - 1),
-                                             cv::Range(1, sgm.width));
-    return (diffUp + diffDown + diffLeft + diffRight);
-}
-
-clustered_objects SGMSegmentation::semantic_segmentation(SGM sgm, cv::Mat ground_label)
-{
-    //cv::Mat range_diff = spherical_grid_map_euclidean_diff(sgm, ground_label);
-    cv::Mat range_diff = spherical_grid_map_depth_diff(sgm, ground_label);
-    cv::threshold(range_diff, range_diff, this->config_.distance_threshold, 255,
-                  this->config_.distance_threshold_type);
-    range_diff = range_diff.mul(ground_label);
-    range_diff.convertTo(range_diff, CV_8UC1);
-
-    std::vector<std::vector<cv::Point>> contours;
-    std::vector<cv::Vec4i> hierarchy;
-
-    cv::findContours(range_diff, contours, hierarchy, cv::RETR_EXTERNAL,
-                     cv::CHAIN_APPROX_SIMPLE);
-
     clustered_objects ss_clustered_objects;
-
     ss_clustered_objects.labels = cv::Mat::zeros(sgm.height, sgm.width, CV_32F);
-    cv::Mat obj_label = cv::Mat::zeros(sgm.height, sgm.width, CV_8UC1);
-
-    for (int i = 0; i < contours.size(); i++)
+    std::cout << "-----------------------------------" << std::endl;
+    for (int colIdx = 0; colIdx < sgm.width; colIdx++)
     {
-        if (!this->config_.obj_level_filter_flag)
-        {
-            int color = 1 + i % 3; // 5 + rand() & 1;
-            drawContours(ss_clustered_objects.labels, contours, i, color, cv::FILLED);
-            drawContours(ss_clustered_objects.labels, contours, i, color, 2, 8, hierarchy, 0,
-                         cv::Point());
-        }
-        else
-        {
-            drawContours(obj_label, contours, i, 1, cv::FILLED);
-            // get object indces in the sgm to process its dimensions.
-            std::vector<cv::Point> indices;
-            cv::findNonZero(obj_label, indices);
+        for (int rowIdx = 0; rowIdx < sgm.height; rowIdx++)
 
-            object obj = filter_objects(sgm, indices);
-            if ((obj.size_x > this->config_.obj_level_x_min &&
-                 obj.size_x < this->config_.obj_level_x_max) &&
-                (obj.size_y > this->config_.obj_level_y_min &&
-                 obj.size_y < this->config_.obj_level_y_max) &&
-                (obj.size_z > this->config_.obj_level_z_min &&
-                 obj.size_z < this->config_.obj_level_z_max))
+        {
+            if (ground_label.at<float>(rowIdx, colIdx) && sgm.d.at<float>(rowIdx, colIdx) > 0)
             {
-                int color = 1 + i % 3; // 5 + rand() & 1;
-                drawContours(ss_clustered_objects.labels, contours, i, color, cv::FILLED);
-                drawContours(ss_clustered_objects.labels, contours, i, color, 2, 8, hierarchy, 0, cv::Point());
-                ss_clustered_objects.objects.push_back(obj);
+                if (rowIdx > 0 && colIdx > 0 &&
+                    (diffLeft.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold && diffUp.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold))
+                {
+                    if (ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) > 0 && ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) > 0 &&
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) != ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) &&
+                        diffLeft.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold && diffUp.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold)
+                    {
+                        std::vector<cv::Point> indices1 = ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) - 1];
+                        std::vector<cv::Point> indices2 = ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) - 1];
+                        float cluster1_size = ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) - 1].size();
+                        float cluster2_size = ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) - 1].size();
+                        if (cluster1_size > cluster2_size)
+                        {
+                            for (int pt_idx = 0; pt_idx < cluster2_size; pt_idx++)
+                            {
+                                ss_clustered_objects.labels.at<float>(indices2[pt_idx].y, indices2[pt_idx].x) = ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx);
+                                update_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(indices2[pt_idx].y, indices2[pt_idx].x) - 1],
+                                              sgm.x.at<float>(indices2[pt_idx].y, indices2[pt_idx].x),
+                                              sgm.y.at<float>(indices2[pt_idx].y, indices2[pt_idx].x),
+                                              sgm.z.at<float>(indices2[pt_idx].y, indices2[pt_idx].x));
+                            }
+                            ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) - 1].clear();
+                            //clear_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) - 1]);
+                        }
+                        else
+                        {
+                            for (int pt_idx = 0; pt_idx < cluster1_size; pt_idx++)
+                            {
+                                ss_clustered_objects.labels.at<float>(indices1[pt_idx].y, indices1[pt_idx].x) = ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1);
+                                update_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(indices1[pt_idx].y, indices1[pt_idx].x) - 1],
+                                              sgm.x.at<float>(indices1[pt_idx].y, indices1[pt_idx].x),
+                                              sgm.y.at<float>(indices1[pt_idx].y, indices1[pt_idx].x),
+                                              sgm.z.at<float>(indices1[pt_idx].y, indices1[pt_idx].x));
+                            }
+                            ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) - 1].clear();
+                            //clear_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) - 1]);
+                        }
+                    }
+                    else if (ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) > 0)
+                    {
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx);
+                        cv::Point p;
+                        p.y = rowIdx;
+                        p.x = colIdx;
+                        ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                        update_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1],
+                                      sgm.x.at<float>(rowIdx, colIdx),
+                                      sgm.y.at<float>(rowIdx, colIdx),
+                                      sgm.z.at<float>(rowIdx, colIdx));
+                    }
+                    else if (ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) > 0)
+                    {
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1);
+                        cv::Point p;
+                        p.y = rowIdx;
+                        p.x = colIdx;
+                        ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                        update_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1],
+                                      sgm.x.at<float>(rowIdx, colIdx),
+                                      sgm.y.at<float>(rowIdx, colIdx),
+                                      sgm.z.at<float>(rowIdx, colIdx));
+                    }
+                    else
+                    {
+                        std::vector<cv::Point> indices;
+                        ss_clustered_objects.cluster_indices.push_back(indices);
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = static_cast<int>(ss_clustered_objects.cluster_indices.size()); //cluster_idx;
+                        cv::Point p;
+                        p.y = rowIdx;
+                        p.x = colIdx;
+                        ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                        object obj = create_object(sgm.x.at<float>(rowIdx, colIdx),
+                                                   sgm.y.at<float>(rowIdx, colIdx),
+                                                   sgm.z.at<float>(rowIdx, colIdx));
+                        ss_clustered_objects.objects.push_back(obj);
+                    }
+                }
+                else if (rowIdx > 0 && diffUp.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold)
+                {
+                    if (ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx) > 0)
+                    {
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = ss_clustered_objects.labels.at<float>(rowIdx - 1, colIdx);
+                        cv::Point p;
+                        p.y = rowIdx;
+                        p.x = colIdx;
+                        ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                        update_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1],
+                                      sgm.x.at<float>(rowIdx, colIdx),
+                                      sgm.y.at<float>(rowIdx, colIdx),
+                                      sgm.z.at<float>(rowIdx, colIdx));
+                    }
+                    else
+                    {
+                        std::vector<cv::Point> indices;
+                        ss_clustered_objects.cluster_indices.push_back(indices);
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = static_cast<int>(ss_clustered_objects.cluster_indices.size()); //cluster_idx;
+                        cv::Point p;
+                        p.y = rowIdx;
+                        p.x = colIdx;
+                        ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                        object obj = create_object(sgm.x.at<float>(rowIdx, colIdx),
+                                                   sgm.y.at<float>(rowIdx, colIdx),
+                                                   sgm.z.at<float>(rowIdx, colIdx));
+                        ss_clustered_objects.objects.push_back(obj);
+                    }
+                }
+                else if (colIdx > 0 && diffLeft.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold)
+                {
+                    if (ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1) > 0)
+                    {
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = ss_clustered_objects.labels.at<float>(rowIdx, colIdx - 1);
+                        cv::Point p;
+                        p.y = rowIdx;
+                        p.x = colIdx;
+                        ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                        update_object(ss_clustered_objects.objects[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1],
+                                      sgm.x.at<float>(rowIdx, colIdx),
+                                      sgm.y.at<float>(rowIdx, colIdx),
+                                      sgm.z.at<float>(rowIdx, colIdx));
+                    }
+                    else
+                    {
+                        std::vector<cv::Point> indices;
+                        ss_clustered_objects.cluster_indices.push_back(indices);
+                        ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = static_cast<int>(ss_clustered_objects.cluster_indices.size()); //cluster_idx;
+                        cv::Point p;
+                        p.y = rowIdx;
+                        p.x = colIdx;
+                        ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                        object obj = create_object(sgm.x.at<float>(rowIdx, colIdx),
+                                                   sgm.y.at<float>(rowIdx, colIdx),
+                                                   sgm.z.at<float>(rowIdx, colIdx));
+                        ss_clustered_objects.objects.push_back(obj);
+                    }
+                }
+                else if (diffLeft.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold || diffUp.at<float>(rowIdx, colIdx) <= this->config_.distance_threshold)
+                {
+                    std::vector<cv::Point> indices;
+                    ss_clustered_objects.cluster_indices.push_back(indices);
+                    ss_clustered_objects.labels.at<float>(rowIdx, colIdx) = static_cast<int>(ss_clustered_objects.cluster_indices.size()); //cluster_idx;
+                    cv::Point p;
+                    p.y = rowIdx;
+                    p.x = colIdx;
+                    ss_clustered_objects.cluster_indices[ss_clustered_objects.labels.at<float>(rowIdx, colIdx) - 1].push_back(p);
+                    object obj = create_object(sgm.x.at<float>(rowIdx, colIdx),
+                                               sgm.y.at<float>(rowIdx, colIdx),
+                                               sgm.z.at<float>(rowIdx, colIdx));
+                    ss_clustered_objects.objects.push_back(obj);
+                }
             }
-            obj_label = 0;
         }
     }
     return ss_clustered_objects;
 }
-
-object SGMSegmentation::filter_objects(SGM sgm, std::vector<cv::Point> indices)
+object SGMSegmentation::create_object(double x, double y, double z)
 {
     object obj;
-    std::vector<float> x, y, z;
-    for (int i = 0; i < indices.size(); i++)
-    {
-        if (!std::isinf(sgm.x.at<float>(indices[i].y, indices[i].x)) &&
-            !std::isnan(sgm.x.at<float>(indices[i].y, indices[i].x)) &&
-            !std::isinf(sgm.y.at<float>(indices[i].y, indices[i].x)) &&
-            !std::isnan(sgm.y.at<float>(indices[i].y, indices[i].x)) &&
-            !std::isinf(sgm.z.at<float>(indices[i].y, indices[i].x)) &&
-            !std::isnan(sgm.z.at<float>(indices[i].y, indices[i].x)) && 1)
-        {
-            x.push_back(sgm.x.at<float>(indices[i].y, indices[i].x));
-            y.push_back(sgm.y.at<float>(indices[i].y, indices[i].x));
-            z.push_back(sgm.z.at<float>(indices[i].y, indices[i].x));
-        }
-    }
-    if (x.size())
-    {
-        obj.pos_x = (*std::max_element(x.begin(), x.end()) +
-                     *std::min_element(x.begin(), x.end())) /
-                    2;
-
-        obj.pos_y = (*std::max_element(y.begin(), y.end()) +
-                     *std::min_element(y.begin(), y.end())) /
-                    2;
-
-        obj.pos_z = (*std::max_element(z.begin(), z.end()) +
-                     *std::min_element(z.begin(), z.end())) /
-                    2;
-
-        obj.size_x = abs(*std::max_element(x.begin(), x.end()) -
-                         *std::min_element(x.begin(), x.end()));
-        obj.size_y = abs(*std::max_element(y.begin(), y.end()) -
-                         *std::min_element(y.begin(), y.end()));
-        obj.size_z = abs(*std::max_element(z.begin(), z.end()) -
-                         *std::min_element(z.begin(), z.end()));
-    }
+    obj.pos_x = x;
+    obj.pos_y = y;
+    obj.pos_z = z;
+    obj.min_x = x;
+    obj.min_y = y;
+    obj.min_z = z;
+    obj.max_x = x;
+    obj.max_y = y;
+    obj.max_z = z;
+    obj.size_x = 0;
+    obj.size_y = 0;
+    obj.size_z = 0;
     return obj;
+}
+void SGMSegmentation::update_object(object &obj, double x, double y, double z)
+{
+    if (obj.min_x > x)
+    {
+        obj.min_x = x;
+    }
+    if (obj.max_x < x)
+    {
+        obj.min_x = x;
+    }
+
+    if (obj.min_y > y)
+    {
+        obj.min_y = y;
+    }
+    if (obj.max_y < y)
+    {
+        obj.min_y = y;
+    }
+
+    if (obj.min_z > z)
+    {
+        obj.min_z = z;
+    }
+    if (obj.max_z < z)
+    {
+        obj.min_z = z;
+    }
+
+    obj.pos_x = (obj.max_x + obj.min_x) / 2;
+    obj.pos_y = (obj.max_y + obj.min_y) / 2;
+    obj.pos_z = (obj.max_z + obj.min_z) / 2;
+
+    obj.size_x = abs(obj.max_x - obj.min_x) ;
+    obj.size_y =  abs(obj.max_y - obj.min_y) ;
+    obj.size_z =  abs(obj.max_z - obj.min_z) ;
+}
+void SGMSegmentation::clear_object(object &obj)
+{
+    obj.pos_x = 0;
+    obj.pos_y = 0;
+    obj.pos_z = 0;
+    obj.min_x = 0;
+    obj.min_y = 0;
+    obj.min_z = 0;
+    obj.max_x = 0;
+    obj.max_y = 0;
+    obj.max_z = 0;
+    obj.size_x = 0;
+    obj.size_y = 0;
+    obj.size_z = 0;
 }

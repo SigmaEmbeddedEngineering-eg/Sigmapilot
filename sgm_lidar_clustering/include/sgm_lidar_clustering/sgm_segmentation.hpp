@@ -33,13 +33,10 @@ class SGMSegmentation
 public:
     SGMSegmentation(configuration config);
     ~SGMSegmentation();
-    cv::Mat spherical_grid_map_depth_diff(SGM sgm, cv::Mat ground_label);
-    cv::Mat euclidean_diff(SGM sgm, cv::Mat ground_label,
-                           cv::Range upper_x, cv::Range lower_x,
-                           cv::Range upper_y, cv::Range lower_y);
-    cv::Mat spherical_grid_map_euclidean_diff(SGM sgm, cv::Mat ground_label);
     clustered_objects semantic_segmentation(SGM sgm, cv::Mat ground_label);
-    object filter_objects(SGM sgm, std::vector<cv::Point> indices);
+    object create_object(double x, double y, double z);
+    void update_object(object &obj, double x, double y, double z);
+    void clear_object(object &obj);
 
 private:
     configuration config_;

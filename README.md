@@ -1,7 +1,9 @@
+![robotion](https://autobotware.ai/wp-content/uploads/2021/05/Asset-1@4x-e1620559830684.png)
+
 # Autobotware
 Autobotware is an all-in-one open-source software for autonomous UGVs and industrial robots. the target industries that Autobotware is working on are farming industry, mining industry, warehouses industry, and construction industry. 
 
-we were always wondering why there isnt any framework that processes robust autonomous software stack on **Raspberry Pi** board that can be used in UGV industries, do we always need a **NVIDIA** board?. The result was **Aytobotware** :)
+we were always wondering why there isnt any framework that processes robust autonomous software stack on **Raspberry Pi** board that can be used in UGV industries, do we always need a **NVIDIA** board?. The result was **Autobotware** :)
 
 # Autobotware Featues
 
@@ -60,3 +62,13 @@ we were always wondering why there isnt any framework that processes robust auto
 
  follow the instructions in [sgm_lidar_clustering](sgm_lidar_clustering/README.md)
 
+## SGM clustering Vs lidar_euclidean_cluster_detect
+
+ read the benchmarking section in [sgm_lidar_clustering](sgm_lidar_clustering/README.md)
+
+
+## Partners
+![sigma](https://autobotware.ai/wp-content/uploads/2021/05/sigma_headerlogo_inverted.png)
+
+
+## [Contact us](https://autobotware.ai/#conatct-us)

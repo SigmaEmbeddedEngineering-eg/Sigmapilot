@@ -126,14 +126,20 @@ void SGMClustering::cloud_cb(const PointCloud::ConstPtr &input)
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
-    
+
     marker.color.r = 0.0f;
     marker.color.g = 1.0f;
     marker.color.b = 0.0f;
     marker.color.a = 1.0;
-    
+
     marker.lifetime = ros::Duration(0.1);
-    ma.markers.push_back(marker);
+    if ((marker.scale.x > this->config.obj_level_x_min &&
+         marker.scale.x < this->config.obj_level_x_max) &&
+        (marker.scale.y > this->config.obj_level_y_min &&
+         marker.scale.y < this->config.obj_level_y_max) &&
+        (marker.scale.z > this->config.obj_level_z_min &&
+         marker.scale.z < this->config.obj_level_z_max))
+      ma.markers.push_back(marker);
   }
   this->marker_pub.publish(ma);
 
@@ -151,7 +157,10 @@ void SGMClustering::cloud_cb(const PointCloud::ConstPtr &input)
       pt.r = sgm.r.at<float>(rowIdx, colIdx);
       pt.g = sgm.g.at<float>(rowIdx, colIdx);
       pt.b = sgm.b.at<float>(rowIdx, colIdx);
-      pt.label = labels.labels.at<float>(rowIdx, colIdx);
+      if (labels.labels.at<float>(rowIdx, colIdx))
+        pt.label = int(labels.labels.at<float>(rowIdx, colIdx)) % 5 + 1;
+      else
+        pt.label = 0;
       pcl_msg.points.push_back(pt);
     }
   }
