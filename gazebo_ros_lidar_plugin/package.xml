@@ -28,15 +28,15 @@
   <build_depend>tf</build_depend>
   <build_depend>tf2_ros</build_depend>
   <build_depend>cv_bridge</build_depend>
-  <build_depend>gazebo_plugins</build_depend>
   <build_depend>gazebo_ros</build_depend>
+  <build_depend>gazebo_plugins</build_depend>
   <build_depend>rosconsole</build_depend>
   <build_depend>nodelet</build_depend>
   <build_depend>urdf</build_depend>
   <build_depend>image_transport</build_depend>
 
-  <exec_depend>gazebo_msgs</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>gazebo_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_srvs</exec_depend>
   <exec_depend>tf</exec_depend>
