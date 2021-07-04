@@ -20,7 +20,6 @@
   <exec_depend>std_msgs</exec_depend>
 
 
-  <build_depend>libgazebo11</build_depend>
   <build_depend>libgazebo11-dev </build_depend>
   <build_depend>gazebo_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
@@ -37,7 +36,6 @@
   <build_depend>urdf</build_depend>
   <build_depend>image_transport</build_depend>
 
-  <exec_depend>libgazebo11</exec_depend>
   <exec_depend>libgazebo11-dev</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>gazebo_msgs</exec_depend>
