@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   laser_geometry
   pcl_conversions
   pcl_ros
+  tf2_geometry_msgs
 )
 
 catkin_package(
