@@ -11,6 +11,9 @@ jobs:
           - {ROS_DISTRO: noetic, ROS_REPO: main}
     runs-on: ubuntu-latest
     steps:
+      - name: Install dependencies
+        run: |
+        sudo apt-get install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control
       - uses: actions/checkout@v1
       - uses: 'ros-industrial/industrial_ci@master'
         env: ${{matrix.env}}
