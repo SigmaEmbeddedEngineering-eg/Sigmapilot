@@ -14,6 +14,7 @@ jobs:
       - name: Install dependencies
         run: |
         sudo apt-get install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control
+        sudo apt-get install -y libgazebo11-dev
       - uses: actions/checkout@v1
       - uses: 'ros-industrial/industrial_ci@master'
         env: ${{matrix.env}}
