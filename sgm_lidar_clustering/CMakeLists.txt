@@ -22,9 +22,9 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(OpenCV REQUIRED
-NO_MODULE
-PATHS /usr/local
-NO_DEFAULT_PATH
+#NO_MODULE
+#PATHS /usr/local
+#NO_DEFAULT_PATH
 )
 message("OpenCV version: ${OpenCV_VERSION}")
 message("OpenCV DIR: ${OpenCV_INCLUDE_DIRS}")
