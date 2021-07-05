@@ -20,7 +20,6 @@
  * 
  */
 
-#include <gazebo_msgs/ModelStates.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

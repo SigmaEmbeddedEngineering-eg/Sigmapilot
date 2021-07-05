@@ -8,8 +8,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  gazebo_plugins
   gazebo_ros
+  gazebo_plugins
   gazebo_msgs
   gazebo_dev
   geometry_msgs
