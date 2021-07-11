@@ -10,7 +10,7 @@
     <param name="base_frame" value="$(arg set_base_frame)"/>
     <param name="odom_frame" value="$(arg set_odom_frame)"/>
     <param name="map_frame"  value="$(arg set_map_frame)"/>
-    <rosparam command="load" file="$(find autobotware_simulator)/config/gmapping_params.yaml" />
+    <rosparam command="load" file="$(find gazebo_simulator)/config/gmapping_params.yaml" />
     <!-- remappings -->
     <remap from="scan" to="$(arg scan_topic)"/>
   </node>

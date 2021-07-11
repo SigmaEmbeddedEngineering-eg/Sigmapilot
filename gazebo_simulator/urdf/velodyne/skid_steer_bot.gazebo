@@ -80,7 +80,7 @@
 
   <!-- Colored LIDAR -->
   <gazebo reference="coloredLidar">
-    <sensor type="camera" name="autobotwareLiDARCamera">
+    <sensor type="camera" name="LiDARCamera">
       <pose>0 0 0 0 0 0</pose>
       <update_rate>10.0</update_rate>
       <camera name="head">

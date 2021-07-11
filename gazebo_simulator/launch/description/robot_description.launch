@@ -3,7 +3,7 @@
   <arg name="sensor" default="benwake"/> <!-- velodyne, benwake -->
 
   <!-- send urdf to param server -->
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find autobotware_simulator)/urdf/$(arg sensor)/skid_steer_bot.xacro'" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find gazebo_simulator)/urdf/$(arg sensor)/skid_steer_bot.xacro'" />
 
   <!-- Send fake joint values-->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">

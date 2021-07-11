@@ -2,7 +2,7 @@
 
 <robot name="skid_steer_bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:include filename="$(find autobotware_simulator)/urdf/velodyne/skid_steer_bot.gazebo" />
+  <xacro:include filename="$(find gazebo_simulator)/urdf/velodyne/skid_steer_bot.gazebo" />
 
   <!-- Scale the robot size to fit the environment -->
   <xacro:property name="scale" value="1.0" />
@@ -354,7 +354,7 @@
     <visual name='coloredLidar_visual'>
       <origin xyz="0 0 0" rpy=" 0 0 0"/>
       <geometry>
-        <mesh filename="package://autobotware_simulator/meshes/hokuyo.dae"/>
+        <mesh filename="package://gazebo_simulator/meshes/hokuyo.dae"/>
       </geometry>
     </visual>
   </link>

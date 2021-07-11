@@ -22,7 +22,7 @@ Required packages:
 
 # RUN:
 
-clone and build **gazebo_ros_package** and **Autobotware Gazebo Ros LiDAR Plugin**.
+clone and build **gazebo_ros_package** and **ModuLiDAR Gazebo Ros LiDAR Plugin**.
 
 
 to run the Clustering Node for Velodyne(Single Sensor):
@@ -70,9 +70,9 @@ rpi setup:
 * ubuntu 20
 * ros noetic
 
-clone and build Autobotware, and run the launch files:
+clone and build ModuLiDAR, and run the launch files:
 
-        roslaunch autobotware_simulator autobotware_rpi_replay.launch rosbag_path:='path_to_bag_files' sensor:=<velodyne/benwake>
+        roslaunch gazebo_simulator modulidar_rpi_replay.launch rosbag_path:='path_to_bag_files' sensor:=<velodyne/benwake>
 
 raspberry pi for velodyne16
 setup:
@@ -110,7 +110,7 @@ as shown in the below figure.
 ## Sensor model:
 we used two sensors first is 16 layer velodyne sensor, second is 64 layer velodyne sensor, to measure the change of point cloud density on the detection algorithms.
 
-## Autobotware setup:
+## ModuLiDAR setup:
 clone the repo and “catkin build”
 will set two sets of configurations:
 
