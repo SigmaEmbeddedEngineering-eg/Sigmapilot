@@ -1,20 +1,20 @@
-![robotion](https://autobotware.ai/wp-content/uploads/2021/05/Asset-1@4x-e1620559830684.png)
+![CI](https://github.com/ros-mobile-robots/diffbot/workflows/CI/badge.svg?branch=noetic-devel)
 
-# Autobotware
-Autobotware is an all-in-one open-source software for autonomous UGVs and industrial robots. the target industries that Autobotware is working on are farming industry, mining industry, warehouses industry, and construction industry. 
+# ModuLiDAR
+ModuLiDAR is an all-in-one open-source software for autonomous UGVs and industrial robots. the target industries that ModuLiDAR is working on are farming industry, mining industry, warehouses industry, and construction industry. 
 
-we were always wondering why there isnt any framework that processes robust autonomous software stack on **Raspberry Pi** board that can be used in UGV industries, do we always need a **NVIDIA** board?. The result was **Autobotware** :)
+we were always wondering why there isnt any framework that processes robust autonomous software stack on **Raspberry Pi** board that can be used in UGV industries, do we always need a **NVIDIA** board?. The result was **ModuLiDAR** :)
 
-# Autobotware Featues
+# ModuLiDAR Featues
 
 - Modular software components can work with different sensors(benwake/velodyne)
 - 3D semantic segmentaiton object detection.
 - Freespace estimation.
-- Integration of Autobotware with ROS packages such as gmapping, move base, and amcl.
+- Integration of ModuLiDAR with ROS packages such as gmapping, move base, and amcl.
 - Free space fusion for cocoon Setup.
 - 3D point cloud assembly.
 
-# Autobotware Planned Features
+# ModuLiDAR Planned Features
 
 - 3D mapping and matching.
 - Object tracking.
@@ -25,38 +25,38 @@ we were always wondering why there isnt any framework that processes robust auto
 
 # Demos:
 ## Navigation
-### Autobotware Farm simulation demo Velodyne 
+### ModuLiDAR Farm simulation demo Velodyne 
 
-    roslaunch autobotware_simulator robot_navigation.launch sensor:=velodyne world_name:='$(find autobotware_simulator)/worlds/turtlebot3_world.world' map_file:='$(find autobotware_simulator)/maps/map.yaml'
+    roslaunch gazebo_simulator robot_navigation.launch sensor:=velodyne world_name:='$(find gazebo_simulator)/worlds/turtlebot3_world.world' map_file:='$(find gazebo_simulator)/maps/map.yaml'
 
-![velo_farm](autobotware_simulator/docs/velodyne_farming_demo.gif)
+![velo_farm](gazebo_simulator/docs/velodyne_farming_demo.gif)
 
-### Autobotware Cave simulation demo velodyne
+### ModuLiDAR Cave simulation demo velodyne
 
-    roslaunch autobotware_simulator robot_navigation.launch sensor:=velodyne world_name:='$(find autobotware_simulator)/worlds/50m_long_mine_world.world' map_file:='$(find autobotware_simulator)/maps/mymap_cave.yaml'
+    roslaunch gazebo_simulator robot_navigation.launch sensor:=velodyne world_name:='$(find gazebo_simulator)/worlds/50m_long_mine_world.world' map_file:='$(find gazebo_simulator)/maps/mymap_cave.yaml'
 
-![velo_cave](autobotware_simulator/docs/velodyne_cave.gif)
+![velo_cave](gazebo_simulator/docs/velodyne_cave.gif)
 
-### Autobotware Farm simulation demo Benwake cocoon
+### ModuLiDAR Farm simulation demo Benwake cocoon
 
-    roslaunch autobotware_simulator robot_navigation.launch sensor:=benwake world_name:='$(find autobotware_simulator)/worlds/turtlebot3_world.world' map_file:='$(find autobotware_simulator)/maps/map.yaml'
+    roslaunch gazebo_simulator robot_navigation.launch sensor:=benwake world_name:='$(find gazebo_simulator)/worlds/turtlebot3_world.world' map_file:='$(find gazebo_simulator)/maps/map.yaml'
 
-![benwake_farm](autobotware_simulator/docs/benwake_farming_demo.gif)
+![benwake_farm](gazebo_simulator/docs/benwake_farming_demo.gif)
 
 ## SLAM
 
-### Autobotware map farm environment
+### ModuLiDAR map farm environment
 
-    roslaunch autobotware_simulator autobotware_gazebo.launch sensor:=velodyne
+    roslaunch gazebo_simulator modulidar_gazebo.launch sensor:=velodyne
 
-![benwake_farm](autobotware_simulator/docs/slam_farm.gif)
+![benwake_farm](gazebo_simulator/docs/slam_farm.gif)
 
 
-### Autobotware map cave environment
+### ModuLiDAR map cave environment
 
-    roslaunch autobotware_simulator autobotware_gazebo.launch sensor:=velodyne world_name:='$(find autobotware_simulator)/worlds/50m_long_mine_world.world' 
+    roslaunch gazebo_simulator modulidar_gazebo.launch sensor:=velodyne world_name:='$(find gazebo_simulator)/worlds/50m_long_mine_world.world' 
 
-![benwake_farm](autobotware_simulator/docs/slam_cave.gif)
+![benwake_farm](gazebo_simulator/docs/slam_cave.gif)
 
 ## Raspberry pi benchmarking
 
@@ -68,7 +68,7 @@ we were always wondering why there isnt any framework that processes robust auto
 
 
 ## Partners
-![sigma](https://autobotware.ai/wp-content/uploads/2021/05/sigma_headerlogo_inverted.png)
+![sigma](https://media-exp1.licdn.com/dms/image/C5112AQE5H7TaTAI58g/article-cover_image-shrink_600_2000/0/1520217198254?e=1628121600&v=beta&t=-vJWqvr0H6QSOoZ02t0429B_iRo2B3aHw01mcCpx1bQ)
 
 
-## [Contact us](https://autobotware.ai/#conatct-us)
+## [Contact us]()

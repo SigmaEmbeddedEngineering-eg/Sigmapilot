@@ -12,15 +12,15 @@
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <!-- base_local_planner parameter is set in the loaded parameter file depending on the local_planner argument -->
     <!--param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" /-->
-    <rosparam file="$(find autobotware_simulator)/config/$(arg local_planner)_local_planner_params.yaml" command="load" />
-    <rosparam file="$(find autobotware_simulator)/config/move_base_params.yaml" command="load" />
+    <rosparam file="$(find gazebo_simulator)/config/$(arg local_planner)_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find gazebo_simulator)/config/move_base_params.yaml" command="load" />
     <!-- global costmap params -->
     <!-- EDIT THIS FILE-->
-    <rosparam file="$(find autobotware_simulator)/config/$(arg costmap_common_params)" command="load" ns="global_costmap" />
-    <rosparam file="$(find autobotware_simulator)/config/costmap_global_params.yaml" command="load" />
+    <rosparam file="$(find gazebo_simulator)/config/$(arg costmap_common_params)" command="load" ns="global_costmap" />
+    <rosparam file="$(find gazebo_simulator)/config/costmap_global_params.yaml" command="load" />
     <!-- local costmap params -->
-    <rosparam file="$(find autobotware_simulator)/config/$(arg costmap_common_params)" command="load" ns="local_costmap" />
-    <rosparam file="$(find autobotware_simulator)/config/costmap_local_params.yaml" command="load" />
+    <rosparam file="$(find gazebo_simulator)/config/$(arg costmap_common_params)" command="load" ns="local_costmap" />
+    <rosparam file="$(find gazebo_simulator)/config/costmap_local_params.yaml" command="load" />
     <!-- remappings -->
     <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
     <remap from="odom" to="$(arg odom_topic)"/>

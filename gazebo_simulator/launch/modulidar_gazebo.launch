@@ -7,7 +7,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="world_name" default="$(find autobotware_simulator)/worlds/benchmarking.world"/>
+  <arg name="world_name" default="$(find gazebo_simulator)/worlds/turtlebot3_world.world"/>
   <!-- 50m_long_mine_world.world, turtlebot3_world.world, jackal_race.world, benchmarking.world  -->
   <!-- $(find gazebo_ros)/worlds/empty_world.world-->
   <arg name="slam" default="false"/>
@@ -20,7 +20,7 @@
   <arg name="fbm_icp_mapping" default="true"/>
 
 
-  <include file="$(find autobotware_simulator)/launch/description/robot_description.launch">
+  <include file="$(find gazebo_simulator)/launch/description/robot_description.launch">
     <arg name="sensor" value="$(arg sensor)"/>
   </include>
 
@@ -52,12 +52,12 @@
   <group if="$(arg slam)">
     <arg name="scan_topic" default="clusteredPointCLoud_laser_scaner" unless="$(eval arg('sensor') =='benwake')"/>
     <arg name="scan_topic" default="fused_laser_scan" unless="$(eval arg('sensor') =='velodyne')" />
-    <include file="$(find autobotware_simulator)/launch/slam/robot_gmapping.launch">
+    <include file="$(find gazebo_simulator)/launch/slam/robot_gmapping.launch">
       <arg name="scan_topic" value="$(arg scan_topic)"/>
     </include>
   </group>
 
-  <include file="$(find autobotware_simulator)/launch/control/robot_control.launch"/>
+  <include file="$(find gazebo_simulator)/launch/control/robot_control.launch"/>
 
   <group if="$(arg assemble_pc)">
     <include file="$(find point_cloud_assembler)/launch/assembler_node.launch">
@@ -75,7 +75,7 @@
 
   <!--launch rviz-->
   <group if="$(arg open_rviz)">
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find autobotware_simulator)/rviz/autobotware_basic_config.rviz"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find gazebo_simulator)/rviz/modulidar_basic_config.rviz"/>
   </group>
 
 </launch>

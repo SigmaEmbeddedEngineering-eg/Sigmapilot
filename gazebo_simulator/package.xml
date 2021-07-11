@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>autobotware_simulator</name>
+  <name>gazebo_simulator</name>
   <version>0.1.0</version>
-  <description>The autobotware_simulator package</description>
+  <description>The gazebo_simulator package</description>
 
   <maintainer email="khalid.elmadawi@robotion.ai">khalid</maintainer>
   
