@@ -1,4 +1,4 @@
-![CI](https://github.com/ros-mobile-robots/diffbot/workflows/CI/badge.svg?branch=noetic-devel)
+![CI](https://github.com/Robotion-AI/ModuLiDAR/workflows/CI/badge.svg?branch=main)
 
 # ModuLiDAR
 ModuLiDAR is an all-in-one open-source software for autonomous UGVs and industrial robots. the target industries that ModuLiDAR is working on are farming industry, mining industry, warehouses industry, and construction industry. 
