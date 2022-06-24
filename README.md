@@ -14,17 +14,39 @@ we were always wondering why there isnt any framework that processes robust auto
 - Integration of Sigmapilot with ROS packages such as gmapping, move base, and amcl.
 - Free space fusion for cocoon Setup.
 - 3D point cloud assembly.
+- 3D mapping and matching.
+- Camera-LiDAR fusion.
 
 # Sigmapilot Planned Features
 
-- 3D mapping and matching.
 - Object tracking.
 - new approaches for 2D mapping and matching.
-- DNN detection and semantic segmentation.
-- Camera-LiDAR fusion.
 
 
 # Demos:
+
+## Feature Based Mapping
+### Run
+launch the **sigmapilot_gazebo.launch** file then the **fbm_icp.launch** files in two different terminals.
+     
+     roslaunch gazebo_simulator sigmapilot_gazebo.launch
+     roslaunch feature_based_mapping fbm_icp.launch
+### Loop closure
+in the below demo we present a loop closure of the FBM algorithm, where there is no deviation of the constructed map
+
+![loop_closure](feature_based_mapping/docs/fbm_loopclosure.gif)
+
+### Elivated Environments
+in the below demo we present the algorithm estimates in elevated environments, such as elevated caves
+
+![elevated_cave1](feature_based_mapping/docs/fbm_cave.gif)
+
+![elevated_cave2](feature_based_mapping/docs/fbm_cave_2.gif)
+
+in the below demo we present the qualitative validation of the accumlative map(Ground truth), and the generated FBM point cloud. 
+
+![elevated_cave_val2](feature_based_mapping/docs/fbm_cave_3.gif)
+
 ## Navigation
 ### Sigmapilot Farm simulation demo Velodyne 
 
@@ -68,8 +90,5 @@ we were always wondering why there isnt any framework that processes robust auto
  read the benchmarking section in [sgm_lidar_clustering](sgm_lidar_clustering/README.md)
 
 
-## Partners
-![sigma](https://media-exp1.licdn.com/dms/image/C5112AQE5H7TaTAI58g/article-cover_image-shrink_600_2000/0/1520217198254?e=1628121600&v=beta&t=-vJWqvr0H6QSOoZ02t0429B_iRo2B3aHw01mcCpx1bQ)
-
-
-## [Contact us]()
+## Contact us
+khalid.elmadawi@sigma.se
