@@ -1,0 +1,31 @@
+<launch>  
+  <arg name="open_rviz" default="true"/>
+  <arg name="LiDAR_topicname" default="[/LiDAR1/pcl, /LiDAR2/pcl]"/>
+  <arg name="fbm_initial_pose" default="[-1.8, 0.5, 0.5, 0, 0, 0]"/>
+  <rosparam param="LiDAR_topicname" subst_value="True">$(arg LiDAR_topicname)</rosparam>
+  <rosparam param="fbm_initial_pose" subst_value="True">$(arg fbm_initial_pose)</rosparam>
+  
+  <node name="fbm_icp" pkg="feature_based_mapping" type="fbm_icp" output="screen">
+    <param name="pub_topicname" type="string" value="/icp_map" />
+    <param name="pub_posetopicname" type="string" value="/map_pose" />
+    <param name="imu_topicname" type="string" value="/imu" />
+    <param name="voxel_size" type="double" value="0.1" />
+    <param name="min_distance_range" type="double" value="0.1" />
+    <param name="freq_ratio" type="int" value="5" />
+    <param name="odom_frame" type="string" value="odom" />
+    <param name="slope_threshold" type="double" value="0.1" />
+    <param name="euclidean_fitness_epsilon" type="double" value="0.000000000001" />
+    <param name="transformation_epsilon" type="double" value="1e-9" />
+    <param name="maximum_iterations" type="double" value="100" />
+    <param name="max_correspondence_distance" type="double" value="5" />
+    <param name="rejection_threshold" type="double" value="0.05" />
+    <param name="map_score_threshold" type="double" value="7.0" />
+    <param name="crop_box_threshold" type="double" value="10.0" />
+    <param name="use_external_imu" type="bool" value="true" />
+  </node>
+
+  <group if="$(arg open_rviz)">
+    <node type="rviz" name="rviz_icp_map" pkg="rviz" args="-d $(find feature_based_mapping)/rviz/fbm_icp.rviz" />
+  </group>
+
+</launch>
